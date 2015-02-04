@@ -1,0 +1,80 @@
+#!/bin/bash
+
+##############################################################################
+#
+# NAME:        check_atp_sync
+#
+# FACILITY:    SAM (Service Availability Monitoring)
+#
+# COPYRIGHT:
+#         Copyright (c) 2009, Members of the EGEE Collaboration.
+#         http://www.eu-egee.org/partners/
+#         Licensed under the Apache License, Version 2.0.
+#         http://www.apache.org/licenses/LICENSE-2.0
+#         This software is provided "as is", without warranties
+#         or conditions of any kind, either express or implied.
+#
+# DESCRIPTION:
+#
+#         Nagios wrapper for atp_synchro
+#
+# AUTHORS:     Steve Traylen, CERN
+#              Pedro Andrade, CERN
+#
+# CREATED:     23-Nov-2009
+#
+# NOTES:
+#
+# MODIFIED:
+#
+##############################################################################
+
+# return state
+STATE_OK=0
+STATE_WARNING=1
+STATE_CRITICAL=2
+STATE_UNKNOWN=3
+STATE_DEPENDENT=4
+
+# default logfile
+ATP_LOGFILE=/var/log/atp/atp.log
+
+echo "=== ATP Sychronizer Check==="
+
+if [ -r $ATP_LOGFILE ] ; then
+
+    grep CRITICAL $ATP_LOGFILE > /dev/null
+    atp_log_critical=$?
+    grep ERROR $ATP_LOGFILE > /dev/null
+    atp_log_error=$?
+    grep WARNING $ATP_LOGFILE > /dev/null
+    atp_log_warning=$?
+    
+    if [ $atp_log_critical == "0" ] ; then
+        grep "CRITICAL" $ATP_LOGFILE
+        echo ""
+        echo "CRITICAL messages found. For more details please check $ATP_LOGFILE."
+        exit $STATE_CRITICAL
+    fi
+    if [ $atp_log_error == "0" ] ; then
+        grep "ERROR" $ATP_LOGFILE
+        echo ""
+        echo "ERROR messages found. For more details please check $ATP_LOGFILE."
+        exit $STATE_CRITICAL
+    fi
+    if [ $atp_log_warning == "0" ] ; then
+        grep "WARNING" $ATP_LOGFILE
+        echo ""
+        echo "WARNING messages found. For more details please check $ATP_LOGFILE."
+        exit $STATE_WARNING
+    fi
+
+    echo ""
+    echo "Successful ATP synchronizer execution!"
+    exit $STATE_OK
+
+else
+    echo "No log file found under $ATP_LOGFILE."
+    exit $STATE_UNKNOWN
+fi
+

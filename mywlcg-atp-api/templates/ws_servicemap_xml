@@ -1,0 +1,28 @@
+<response>
+    {% for se in services %}<resource>
+    <flavour>
+            <flavourname>{{ se.flavour.flavourname }}</flavourname>
+            <id>{{ se.flavour.id }}</id>
+        </flavour>
+        <hostname>{{ se.hostname }}</hostname>
+        <site>
+            {% for si in se.site.all %}
+            <resource>
+                <sitename>{{ si.sitename }}</sitename>
+            </resource>
+            {% endfor %}
+        </site>
+        <id>{{ se.id }}</id>
+        <ismonitored>{{ se.ismonitored }}</ismonitored>
+        <isinproduction>{{ se.isinproduction }}</isinproduction>
+        <vo>
+            {% for vo in se.vo.all %}            
+            <resource>
+                <voname>{{ vo.voname }}</voname>
+            </resource>
+            {% endfor %}
+        </vo>
+        <serviceendpoint>{{ se.serviceendpoint }}</serviceendpoint>
+    </resource>
+    {% endfor %}
+</response>

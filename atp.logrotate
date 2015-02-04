@@ -1,0 +1,7 @@
+/var/log/atp/atp_full.log {
+    daily
+    compress
+    notifempty
+    missingok
+    copytruncate
+}

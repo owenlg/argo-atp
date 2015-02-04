@@ -1,0 +1,13 @@
+[
+    {% for site in sites %}{
+        "site": "{{ site.0 }}", 
+        "atp_site": "{{ site.0 }}", 
+        "region": "{{ site.1 }}", 
+        "infrast": "{{ site.2 }}", 
+        "vo": [
+            {% for vo in site.3 %}"{{ vo }}"{% if not forloop.last %},{% endif %}
+	    {% endfor %}
+        ]
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]

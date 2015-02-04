@@ -1,0 +1,26 @@
+{% load atp_tags %}
+<response>
+	{% for sg in service_groups %}<resource>
+		<grouptype>{{ sg.groups.group_type.typename }}</grouptype>
+		<atp_site>{{ sg.service.site.get.sitename }}</atp_site>
+		<infrastructure>{{ sg.service.site.get.infrast }}</infrastructure>
+		<hostname>{{ sg.service.hostname }}</hostname>
+		<service_id>{{ sg.service_id }}</service_id>		
+		<service_flavour>{{ sg.service.flavour.flavourname }}</service_flavour>
+		<service_flavour_id>{{ sg.service.flavour_id }}</service_flavour_id>		
+		<vo>
+			<voname>{{ sg.vo.voname }}</voname>
+		</vo>
+		<roc>{% roc_name sg.service.site %}</roc>
+		<groupname>{{ sg.groups.groupname }}</groupname>
+		<serviceendpoint>{{ sg.service.serviceendpoint }}</serviceendpoint>
+        <spacetoken>
+			{% for st in sg.service.spacetoken_set.all %}
+			<spacetoken_name>{{ st.tokenname }}</spacetoken_name>
+			<spacetoken_path>{{ st.tokenpath }}</spacetoken_path>
+			{% endfor %}
+         </spacetoken>
+		<ismonitored>{{ sg.service.ismonitored }}</ismonitored>
+		<isinproduction>{{ sg.service.isinproduction }}</isinproduction>
+	</resource>{% endfor %}
+</response>

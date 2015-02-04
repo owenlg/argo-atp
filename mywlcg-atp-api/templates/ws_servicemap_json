@@ -1,0 +1,27 @@
+[
+    {% for se in services %}{
+        "flavour": {
+            "flavourname": "{{ se.flavour.flavourname }}",
+            "id": {{ se.flavour.id }}
+        },
+        "hostname": "{{ se.hostname }}",
+        "site": [
+            {% for si in se.site.all %}{
+                "sitename": "{{ si.sitename }}",
+                "infrast": {
+                    "infrastname": "{{ si.infrast.infrastname }}"
+                }
+            }{% if not forloop.last %},{% endif %}
+        {% endfor %}],
+        "id": {{ se.id }},
+        "ismonitored": "{{ se.ismonitored }}",
+        "isinproduction": "{{ se.isinproduction }}",
+        "vo": [{% for vo in se.vo.all %}
+            {
+                "voname": "{{ vo.voname }}"
+            }{% if not forloop.last %},{% endif %}{% endfor %}
+        ],
+        "serviceendpoint": "{{ se.serviceendpoint }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]

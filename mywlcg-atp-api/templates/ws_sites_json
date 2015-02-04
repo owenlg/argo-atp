@@ -1,0 +1,21 @@
+[
+    {% for site in sites %}{
+        "giisurl": "{{ site.4 }}", 
+        "contactemail": "{{ site.9 }}", 
+        "sitename": "{{ site.0 }}", 
+        "certifstatus": "{{ site.7 }}", 
+        "longitude": "{{ site.6 }}", 
+        "infrasttype": "{{ site.8 }}", 
+        "contacttel": "{{ site.10 }}", 
+        "infrast": {
+            "infrastname": "{{ site.2 }}"
+        }, 
+        "ismonitored": "{{ site.11 }}", 
+        "country": {
+            "countryname": "{{ site.3 }}"
+        }, 
+        "latitude": "{{ site.5 }}", 
+        "sitedesc": "{{ site.1 }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]

@@ -1,0 +1,25 @@
+{% load atp_tags %}
+[
+    {% for sg in service_groups %}{
+        "grouptype": "{{ sg.groups.group_type.typename }}", 
+        "atp_site": "{{ sg.service.site.get.sitename }}", 
+        "infrastructure": "{{ sg.service.site.get.infrast }}", 
+        "hostname": "{{ sg.service.hostname }}", 
+        "service_id": "{{ sg.service_id }}", 
+        "service_flavour": "{{ sg.service.flavour.flavourname }}", 
+        "service_flavour_id": "{{ sg.service.flavour_id }}", 
+        "vo": {
+            "voname": "{{ sg.vo.voname }}"
+        }, 
+        "roc": "{% roc_name sg.service.site %}", 
+        "groupname": "{{ sg.groups.groupname }}", 
+        "serviceendpoint": "{{ sg.service.serviceendpoint }}", 
+        "ismonitored": "{{ sg.service.ismonitored }}",
+        "isinproduction": "{{ sg.service.isinproduction }}",
+        "spacetokens": [
+            {% for st in sg.service.spacetoken_set.all %}{"name": "{{ st.tokenname }}", "path": "{{ st.tokenpath }}"}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]
