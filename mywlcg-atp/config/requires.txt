@@ -1,0 +1,6 @@
+Django
+elementtree
+uuid
+mod_wsgi
+django-pagination
+django-piston

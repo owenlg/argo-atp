@@ -1,0 +1,15 @@
+[
+    {% for contact in contacts %}{
+        "contact":{
+            "name": "{{ contact.0 }}",
+            "dn": "{{ contact.1 }}",
+            "telephone": "{{ contact.2 }}",
+            "email": "{{ contact.3 }}"
+         },
+         {% if field %}"role": "{{ contact.5 }}",
+         "{{ field }}": {
+		"{{ field }}name": "{{ contact.4 }}"
+         }{% endif %}
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]

@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# atp_synchro  -  This shell script enables cronjob for ATP_SYNCHRO.
+#
+# Author:      pedro.andrade@cern.ch
+#
+# chkconfig:    - 81 15
+#
+# description:  Enable a run of atp_synchro cron
+# processname:  atp_synchro
+
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+lockfile=/var/lock/subsys/atp_synchro
+
+RETVAL=0
+
+start() {
+        echo -n $"Enabling atp-sync cron"
+        touch "$lockfile" && success || failure
+        let "RETVAL+=$?"
+        echo
+}
+
+stop() {
+        echo -n $"Disabling atp-sync cron"
+        rm -f "$lockfile" && success || failure
+        RETVAL=$?
+        echo
+        echo -n $"Killing all remaining processes"
+        PID=`pgrep -x atp_synchro`;
+        if [ -n "$PID" ]; then
+                pkill -9 -P $PID; kill -9 $PID
+        fi
+        success
+        echo
+}
+
+restart() {
+        stop
+        start
+}
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart|force-reload)
+        restart
+        ;;
+  condrestart)
+        [ -f "$lockfile" ] && restart
+        ;;
+  status)
+        if [ -f $lockfile ]; then
+                echo $"Cron atp-sync is enabled"
+                RETVAL=0
+        else
+                echo $"Cron atp-sync is disabled"
+                RETVAL=3
+        fi
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|status|restart|force-reload|condrestart}"
+        exit 1
+esac
+
+exit $RETVAL

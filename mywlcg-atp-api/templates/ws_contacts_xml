@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response>
+	{% for contact in contacts %}<resource>
+		<contact>
+			<dn>{{ conatact.2 }}</dn>
+			<telephone>{{ contact.1 }}</telephone>
+			<name>{{ contact.0 }}</name>
+			<email>{{ contact.3 }}</email>
+		</contact>
+		{% if field %}{% ifnotequal field vo %}<role>{{ contact.5 }}</role>{% endifnotequal %}
+		<{{ field }}>
+			<{{ field }}name>{{ contact.4 }}</{{ field }}name>
+		</{{ field }}>{% endif %}
+	</resource>
+	{% endfor %}
+</response>

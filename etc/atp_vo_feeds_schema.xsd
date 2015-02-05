@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:element name="root" type="rootType"/>
+	<xs:complexType name="rootType">
+		<xs:sequence>
+			<xs:element name="title" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="feed_responsible" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:attribute name="name" type="xs:string" use="required"/>
+					<xs:attribute name="dn" type="xs:string" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="last_update" minOccurs="1" maxOccurs="1">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="vo" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="atp_site" type="atp_siteType" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="atp_siteType">
+		<xs:sequence>
+			<xs:element name="service" type="serviceType" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element name="group" type="groupType" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="infrast" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="serviceType">
+		<xs:sequence>
+			<xs:element name="spacetoken" type="spacetokenType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="group" type="groupType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="hostname" type="xs:string" use="required"/>
+		<xs:attribute name="flavour" type="xs:string" use="required"/>
+		<xs:attribute name="endpoint" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="spacetokenType">
+		<xs:attribute name="base_path" type="xs:string" use="required"/>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="groupType">
+		<xs:attribute name="name" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:minLength value="3"/>
+					<xs:maxLength value="100"/>
+					<xs:whiteSpace value="preserve"/>
+					<xs:pattern value="([^`~;,'])+"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="type" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:minLength value="3"/>
+					<xs:maxLength value="100"/>
+					<xs:whiteSpace value="preserve"/>
+					<xs:pattern value="([^`~;,'])+"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+</xs:schema>

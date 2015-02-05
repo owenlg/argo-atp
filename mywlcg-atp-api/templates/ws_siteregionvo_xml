@@ -1,0 +1,12 @@
+<response>
+	{% for site in sites %}<resource>
+		<atp_site>{{ site.0 }}</atp_site>
+		<region>{{ site.1 }}</region>
+		<infrast>{{ site.2 }}</infrast>
+		<vo>
+			{% for vo in site.3 %}<resource>{{ vo }}</resource>
+			{% endfor %}
+		</vo>
+	</resource>
+	{% endfor %}
+</response>

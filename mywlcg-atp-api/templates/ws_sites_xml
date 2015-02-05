@@ -1,0 +1,21 @@
+<response>
+	{% for site in sites %}<resource>
+		<giisurl>{{ site.4 }}</giisurl>
+		<contactemail>{{ site.9 }}</contactemail>
+		<sitename>{{ site.0 }}</sitename>
+		<certifstatus>{{ site.7 }}</certifstatus>
+		<longitude>{{ site.6 }}</longitude>
+		<infrasttype>{{ site.8 }}</infrasttype>
+		<contacttel>{{ site.10 }}</contacttel>
+		<infrast>
+			<infrastname>{{ site.2 }}</infrastname>
+		</infrast>
+		<ismonitored>{{ site.11 }}</ismonitored>
+		<country>
+			<countryname>{{ site.3 }}</countryname>
+		</country>
+		<latitude>{{ site.5 }}</latitude>
+		<sitedesc>{{ site.1 }}</sitedesc>
+	</resource>
+	{% endfor %}
+</response>

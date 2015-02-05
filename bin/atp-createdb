@@ -1,0 +1,138 @@
+#!/bin/sh
+
+DBNAME="mrs"
+DBCREATEPATH="/usr/share/doc/argo-atp-1.0.0/mysql_schema/db_create/"
+ATPDJANGO="/etc/atp_django/atp.ini"
+ATPDBCONF="/etc/atp/atp_db.conf"
+
+atpini()
+{
+
+	if [ ! -f $ATPDJANGO ]
+	then
+		SECRETKEY=$(uuidgen)
+		TIME=$(date)
+		TIMEZONE=$(grep "^ZONE" /etc/sysconfig/clock | awk -F "\"" '{print $2}')
+		echo \
+"# created by atp-createdb - $TIME 
+[server]
+PREFIX:/atp
+
+[database]
+DATABASE_ENGINE: mysql
+DATABASE_NAME: mrs
+DATABASE_USER: mrs
+DATABASE_PASSWORD: $DBPASS
+DATABASE_PORT:
+DATABASE_HOST: localhost
+
+[secrets]
+SECRET_KEY: $SECRETKEY
+
+[debug]
+DEBUG:false
+TEMPLATE_DEBUG: false
+VIEW_TEST: false
+INTERNAL_IPS: 127.0.0.1
+
+[email]
+SERVER_EMAIL: root
+EMAIL_HOST: localhost
+
+[timezone]
+TIME_ZONE: $TIMEZONE
+
+# the [error mail] and [404 mail] sections are special. Just add lines with
+#  full name: email_address@domain.xx
+# each section must be present but may be empty.
+[error mail]
+#Foo Bar: foo.bar@example.com
+[404 mail]
+#Foo Bar: foo.bar@example.com
+
+[piston_config]
+#django-piston configuration variables
+PISTON_DISPLAY_ERRORS:false" \
+		> $ATPDJANGO
+	else
+		sed -i "s/DATABASE_ENGINE:.*/DATABASE_ENGINE: mysql/" $ATPDJANGO
+		sed -i "s/DATABASE_NAME:.*/DATABASE_NAME: mrs/" $ATPDJANGO
+		sed -i "s/DATABASE_USER:.*/DATABASE_USER: mrs/" $ATPDJANGO
+		sed -i "s/DATABASE_PASSWORD:.*/DATABASE_PASSWORD: $DBPASS/" $ATPDJANGO
+		sed -i "s/DATABASE_HOST:.*/DATABASE_HOST: localhost/" $ATPDJANGO
+		sed -i "s/DATABASE_PORT:.*/DATABASE_PORT: /" $ATPDJANGO
+	fi
+
+}
+
+atpdbconf()
+{
+	echo \
+"# created by atp-createdb - $TIME 
+[database]
+db_type=mysql
+db_name=mrs
+host=localhost
+user=mrs
+passwd=$DBPASS
+commit=" \
+	> $ATPDBCONF
+}
+
+createdb()
+{
+	printf "Creating %s database\n" $DBNAME
+	mysql -u root --password="$MYSQLADMIN" < $DBCREATEPATH/create_db.sql
+	if [ $? != 0 ]
+	then
+		printf "Error, create_db.sql failed\n"
+		exit 1
+	fi
+
+	printf "Creating database grants\n"
+	mysql -u root --password=$MYSQLADMIN --exec "grant ALL on mrs.* TO \
+	mrs@localhost identified by '$DBPASS'; FLUSH PRIVILEGES;"
+	if [ $? != 0 ]
+	then
+		printf "Error, create_db.sql failed\n"
+		exit 1
+	fi
+	
+	printf "Loading timezone info into MySQL\n"
+	mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -h localhost \
+	--password="$MYSQLADMIN" --force mysql
+	if [ $? != 0 ]
+	then
+		printf "Error, create_db.sql failed\n"
+		exit 1
+	fi
+	
+	printf "Creating database schema\n"
+	perl $DBCREATEPATH/deploy_dbschema.pl --db_user root --db_name mrs \
+	--db_pass "$MYSQLADMIN" --db_type mysql
+	if [ $? != 0 ]
+	then
+		printf "Error, deploy_dbschema.pl failed\n"
+		exit 1
+	fi 
+}
+
+printf "Updating configuration with credentials\n\n"	
+if [[ -w $(dirname $ATPDJANGO) && -w $(dirname $ATPDBCONF) ]]
+then
+	read -p "Enter MYSQL_ADMIN password: " MYSQLADMIN
+	read -p "Enter DB_PASS password: " DBPASS
+	atpini
+	atpdbconf
+else
+	printf "You don't have permission to update\n$ATPDJANGO, $ATPDBCONF\n"
+	exit 1
+fi
+
+mysqlshow -u root --password="$MYSQLADMIN" $DBNAME > /dev/null 2>&1
+if [ $? != 0 ]
+then
+	createdb
+else
+	printf "$DBNAME database already exists\n"
+fi

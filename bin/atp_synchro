@@ -1,0 +1,83 @@
+#!/usr/bin/python
+
+# ################################################### 
+#
+# NAME:        atp_synchro
+#
+# FACILITY:    SAM (Service Availability Monitoring)
+#
+# COPYRIGHT:
+#         Copyright (c) 2009, Members of the EGEE Collaboration.
+#         http://www.eu-egee.org/partners/
+#         Licensed under the Apache License, Version 2.0.
+#         http://www.apache.org/licenses/LICENSE-2.0
+#         This software is provided "as is", without warranties
+#         or conditions of any kind, either express or implied.
+#
+# DESCRIPTION:
+#
+#         This application synchronizes the ATP database with information
+#         from different topology providers
+#
+# AUTHORS:     David Collados, CERN
+#              Joshi Pradyumna, BARC
+#              Pedro Andrade, CERN
+#
+# CREATED:     23-Nov-2009
+#
+# NOTES:
+#
+# MODIFIED:    26-August-2011
+#
+# #####################################################
+
+import os
+import sys
+import string
+from atp_synchronizer import atp_synchro
+from atp_synchronizer import config
+from atp_synchronizer import input
+from atp_synchronizer import output
+
+def IsProcessRunning():
+    pid = os.getpid()
+    for line in os.popen('ps ax'):
+        if line.split()[4] == '/usr/bin/python':
+            if line.split()[5].find('atp_synchro') > 0 and line.split()[0] != str(pid):
+                return True
+    return False
+
+if __name__ == "__main__":
+    if IsProcessRunning():
+        print "Another instance of ATP synchronizer is already running.\n"
+        sys.exit(1)
+
+    config = config.Config()
+
+    # Open database connection to update the information
+    if string.lower(config.database_type)=="mysql":
+        import MySQLdb
+        config.setAction("Connecting to ATP MySQL database")
+        conn = MySQLdb.Connection(user=config.database_user, passwd=config.database_password,host= config.database_host, db=config.database_name)
+    else:
+        import cx_Oracle
+        conn = cx_Oracle.Connection(user=config.database_user, password=config.database_password, dsn=config.database_name)
+        config.setAction("Connecting to ATP Oracle database")
+        conn.begin() 
+    cursor = conn.cursor()
+    if string.lower(config.database_type)=="mysql":
+        cursor.execute('SET autocommit=0;')
+    dbInput = input.DBInput(config, cursor)
+    dbOutput = output.DBOutput(config, cursor)
+
+
+    atp_synchro.run(config, conn, dbInput, dbOutput)
+
+    if string.lower(config.database_type)=="mysql":
+        config.setAction("Disconnecting from ATP MySQL database")
+    else:
+        config.setAction("Disconnecting from ATP Oracle database")
+    cursor.close()
+    conn.close()
+    sys.exit(0)
+    
