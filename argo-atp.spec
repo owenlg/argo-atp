@@ -2,7 +2,7 @@
 
 Name:           argo-atp
 Version:        1.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The Aggregated Topology Provider (ATP) contains grid topology information.
 Group:          Development/Languages
 License:        ASL 2.0
@@ -10,16 +10,16 @@ URL:            http://tomtools.cern.ch/confluence/display/SAMDOC
 Source0:        argo-atp-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
-BuildRequires:  python-devel
-Requires:       python-simplejson >= 2.0.3
-Requires:       libyaml >= 0.1.2
+Requires:       MySQL-python
 Requires:       PyYAML >= 3.08
+Requires:       libyaml >= 0.1.2
+Requires:       mx >= 2.0.6
+Requires:       python-django-pagination
 Requires:       python-ldap >= 2.2.0
 Requires:       python-lxml
+Requires:       python-simplejson >= 2.0.3
 Requires:       python-uuid
-Requires:       MySQL-python
 Requires:       stomppy
-Requires:       mx >= 2.0.6
 Conflicts:      atp
 
 %define stripargo() %(echo %1 | sed 's/argo-//')
@@ -85,5 +85,9 @@ fi
 %config(noreplace) /etc/httpd/conf.d/xatp-pi.conf
 
 %changelog
+* Mon May 11 2015 Daniel Vrcic <dvrcic@srce.hr> - 1.0.0-2{?dist}
+- remove obsoleted info
+- configuration update
+- package dependencies updated
 * Thu Jan 29 2015 Daniel Vrcic <dvrcic@srce.hr> - 1.0.0-1{?dist}
 - ATP for ARGO transition period
