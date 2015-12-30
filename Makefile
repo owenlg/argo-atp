@@ -10,6 +10,8 @@ dist:
 	cd dist; tar cfz ../${PKGNAME}-${PKGVERSION}.tar.gz ${PKGNAME}-${PKGVERSION}
 	rm -rf dist
 
+sources: dist
+
 srpm: dist
 	  rpmbuild -ts --define='dist .el6' ${PKGNAME}-${PKGVERSION}.tar.gz
 
