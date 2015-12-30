@@ -2,7 +2,7 @@
 
 Name:           argo-atp
 Version:        1.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        The Aggregated Topology Provider (ATP) contains grid topology information.
 Group:          Development/Languages
 License:        ASL 2.0
@@ -85,6 +85,8 @@ fi
 %config(noreplace) /etc/httpd/conf.d/xatp-pi.conf
 
 %changelog
+* Fri Dec 25 2015 Daniel Vrcic <dvrcic@srce.hr> - 1.0.0-3{?dist}
+- cron script fix
 * Mon May 11 2015 Daniel Vrcic <dvrcic@srce.hr> - 1.0.0-2{?dist}
 - remove obsoleted info
 - configuration update

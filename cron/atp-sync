@@ -1,2 +1,2 @@
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
-50 * * * * nagios [ -f /var/lock/subsys/atp_synchro ] && ( /usr/bin/atp_synchro -d /etc/atp/atp_db.conf -c /etc/atp/atp_synchro.conf -l /etc/atp/atp_logging_files.conf ) > /dev/null 2>&1
+50 * * * * nagios /usr/bin/atp_synchro -d /etc/atp/atp_db.conf -c /etc/atp/atp_synchro.conf -l /etc/atp/atp_logging_files.conf > /dev/null 2>&1
